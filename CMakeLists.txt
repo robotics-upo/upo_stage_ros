@@ -1,0 +1,53 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(upo_stage_ros)
+
+find_package(catkin REQUIRED COMPONENTS geometry_msgs nav_msgs roscpp rostest sensor_msgs std_msgs tf upo_msgs)
+
+find_package(Boost REQUIRED COMPONENTS system thread)
+
+find_package(FLTK REQUIRED)
+if(FLTK_FOUND)
+  # FindFLTK.cmake doesn't populate FLTK_INCLUDE_DIRS on some systems,
+  # so we try to use FLTK_INCLUDE_DIR if we need to.
+  if("${FLTK_INCLUDE_DIRS}" STREQUAL "")
+    set(FLTK_INCLUDE_DIRS "${FLTK_INCLUDE_DIR}")
+  endif()
+  message(status "FLTK_LIBRARIES=" ${FLTK_LIBRARIES})
+  message(status "FLTK_INCLUDE_DIR=" ${FLTK_INCLUDE_DIR})
+  message(status "FLTK_INCLUDE_DIRS=" ${FLTK_INCLUDE_DIRS})
+else()
+  message(fatal_error "FLTK not found...aborting!")
+endif()
+
+set(Stage_DIR cmake)
+find_package(Stage REQUIRED)
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  ${FLTK_INCLUDE_DIRS}
+  ${Stage_INCLUDE_DIRS}
+)
+
+catkin_package()
+
+# Declare a cpp executable
+add_executable(upo_stageros src/upo_stageros.cpp)
+set(${PROJECT_NAME}_extra_libs "")
+if(UNIX AND NOT APPLE)
+  set(${PROJECT_NAME}_extra_libs dl)
+endif()
+target_link_libraries(upo_stageros ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${FLTK_LIBRARIES} ${Stage_LIBRARIES} ${${PROJECT_NAME}_extra_libs})
+if(catkin_EXPORTED_TARGETS)
+	add_dependencies(upo_stageros ${catkin_EXPORTED_TARGETS})
+endif()
+
+## Install
+
+install(TARGETS upo_stageros
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+
