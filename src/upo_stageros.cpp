@@ -402,7 +402,7 @@ StageNode::StageNode(int argc, char** argv, bool gui, const char* fname, bool us
 
     //---Added by Noé -----------------------------------------
     if(!localn.getParam("fiducials_frame", fiducials_frame))
-	fiducials_frame = "map";
+		fiducials_frame = "map";
 
     map_frame_origin_x = 0.0;
     map_frame_origin_y = 0.0;
@@ -785,7 +785,7 @@ StageNode::WorldCallback()
 			Stg::Pose location = fiducialmodel->GlobalToLocal(fids[i].pose);
 			msg.transform.translation.x = location.x; 
 			msg.transform.translation.y = location.y;
-			msg.transform.translation.z = location.z;
+			msg.transform.translation.z = 0.5; //location.z;
 			msg.transform.rotation = tf::createQuaternionMsgFromYaw(location.a);
 				
 			tf_broadcaster.sendTransform(msg);			
@@ -803,13 +803,34 @@ StageNode::WorldCallback()
 				correct = true;
     			}
     			catch (tf::TransformException ex){
-      				ROS_WARN("%s",ex.what());
-    			}
+      				ROS_WARN("UPO_STAGEROS. Transform exception: %s",ex.what());
+    			}		
 			if(correct) {
 				x = (float)transform.getOrigin().getX();
 				y = (float)transform.getOrigin().getY();
 				h = (float)tf::getYaw(transform.getRotation());
 			}
+
+			/*
+			geometry_msgs::PoseStamped p;
+			p.header.frame_id = "map";
+			p.header.stamp = ros::Time::now();
+			p.pose.position.x = location.x;
+			p.pose.position.y = location.y;
+			p.pose.position.z = location.z;
+			p.pose.orientation = tf::createQuaternionMsgFromYaw(location.a);			
+			geometry_msgs::PoseStamped pose_out;
+			try {
+				tf_listener.transformPose(fiducials_frame.c_str(), p, pose_out);
+				correct = true;
+			}catch (tf::TransformException ex){
+				ROS_WARN("TransformException in method transformPoseTo: %s",ex.what());
+			}
+			if(correct) {
+				x = pose_out.pose.position.x;
+				y = pose_out.pose.position.y;
+				h = tf::getYaw(pose_out.pose.orientation);
+			}*/	
 
 			upo_msgs::PersonPoseUPO pose;
 			pose.header.stamp = poseArr.header.stamp;
