@@ -1,5 +1,5 @@
 # upo_stage_ros
-A modified version of the regular ROS wrapper for the Stage robot simulator
+A modified version of the regular ROS wrapper for the Stage robot simulator. Tested with ROS version Indigo.
 
 
 This version has been modified in order to publish the people detected (blocks or other stage models) using the next messages:
