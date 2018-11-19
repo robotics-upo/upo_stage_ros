@@ -19,14 +19,15 @@ else()
   message(fatal_error "FLTK not found...aborting!")
 endif()
 
-set(Stage_DIR cmake)
-find_package(Stage REQUIRED)
+set(STAGE_DIR cmake)
+find_package(stage REQUIRED)
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${FLTK_INCLUDE_DIRS}
-  ${Stage_INCLUDE_DIRS}
+  #${Stage_INCLUDE_DIRS}
+  ${STAGE_INCLUDE_DIRS}
 )
 
 catkin_package()
@@ -37,7 +38,7 @@ set(${PROJECT_NAME}_extra_libs "")
 if(UNIX AND NOT APPLE)
   set(${PROJECT_NAME}_extra_libs dl)
 endif()
-target_link_libraries(upo_stageros ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${FLTK_LIBRARIES} ${Stage_LIBRARIES} ${${PROJECT_NAME}_extra_libs})
+target_link_libraries(upo_stageros ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${FLTK_LIBRARIES} ${STAGE_LIBRARIES} ${${PROJECT_NAME}_extra_libs})
 if(catkin_EXPORTED_TARGETS)
 	add_dependencies(upo_stageros ${catkin_EXPORTED_TARGETS})
 endif()
